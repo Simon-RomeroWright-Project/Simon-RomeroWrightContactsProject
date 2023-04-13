@@ -10,6 +10,13 @@ public class ContactsManager {
     private static Path contactsFile = Paths.get("contacts.txt");
 
     public static void main(String[] args) {
+        if (!Files.exists(contactsFile)) {
+            try {
+                Files.createFile(contactsFile);
+            } catch (IOException e) {
+                System.out.println("Unable to create contacts file: " + e.getMessage());
+            }
+        }
         boolean running = true;
         while (running) {
             System.out.println("Choose from the following options: \n1. Show all contacts\n2. Add a new contact\n3. Search a contact by name\n4. Delete an existing contact\n5. Exit ");
@@ -57,20 +64,43 @@ private static void showContacts() {
     }
 }
 
-private static void addContact() {
-    System.out.print("Please enter the name: ");
-    String name = scanner.nextLine();
-    System.out.print("Please enter the phone number: ");
-    String phoneNumber = scanner.nextLine();
-    String contactString = name + "," + phoneNumber;
-    try {
-        Files.write(contactsFile, (contactString + "\n").getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
-        System.out.println("Contact added: " + contactString);
-    } catch (IOException e) {
-        System.out.println("Unable to write to contacts file: " + e.getMessage());
-    }
-}
+    private static void addContact() {
+        System.out.print("Please enter the name: ");
+        String name = scanner.nextLine();
+        System.out.print("Please enter the phone number: ");
+        String phoneNumber = scanner.nextLine();
 
+        boolean contactAlreadyExists = false;
+        try {
+            List<String> lines = Files.readAllLines(contactsFile);
+            for (String line : lines) {
+                String[] parts = line.split(",");
+                if (parts[0].equalsIgnoreCase(name)) {
+                    contactAlreadyExists = true;
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Unable to read contacts file: " + e.getMessage());
+            return;
+        }
+        if (contactAlreadyExists) {
+            System.out.println("There is already a contact named " + name + ". Do you want to overwrite it? (Yes/No)");
+            String overwrite = scanner.nextLine();
+            if (!overwrite.equalsIgnoreCase("yes")) {
+                System.out.println("Contact not added.");
+                return;
+            }
+        }
+
+        String contactString = name + "," + phoneNumber;
+        try {
+            Files.write(contactsFile, (contactString + "\n").getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
+            System.out.println("Contact added: " + contactString);
+        } catch (IOException e) {
+            System.out.println("Unable to write to contacts file: " + e.getMessage());
+        }
+    }
 private static void searchContacts() {
     System.out.print("Please enter the name you are searching for: ");
     String name = scanner.nextLine();
@@ -93,7 +123,7 @@ private static void searchContacts() {
 }
 
 private static void deleteContact(){
-        System.out.print("Enter then name of the contact to delete");
+        System.out.print("Enter the name of the contact to delete");
         String name = scanner.nextLine();
         try{
             List<String> lines =
