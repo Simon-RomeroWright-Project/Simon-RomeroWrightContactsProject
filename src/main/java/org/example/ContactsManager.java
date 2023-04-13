@@ -56,7 +56,11 @@ private static void showContacts() {
             System.out.println("--------------------------------");
             for (String line : lines) {
                 String [] parts = line.split(",");
-                System.out.printf("%-16s | %-16s%n", parts[0],parts[1]);
+                String phoneNumber = parts[1];
+                if (phoneNumber.length() == 10) {
+                    phoneNumber = phoneNumber.substring(0, 3) + "-" + phoneNumber.substring(3, 6) + "-" + phoneNumber.substring(6);
+                }
+                System.out.printf("%-16s | %-16s%n", parts[0],phoneNumber);
             }
         }
     } catch (IOException e) {
