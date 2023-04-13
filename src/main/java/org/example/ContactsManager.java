@@ -91,3 +91,30 @@ private static void searchContacts() {
         System.out.println("Unable to read file: " + e.getMessage());
     }
 }
+
+private static void deleteContact(){
+        System.out.print("Enter then name of the contact to delete");
+        String name = scanner.nextLine();
+        try {
+            List<String> lines =
+                    Files.readAllLines(contactsFile);
+            boolean found = false;
+            for (int i =0;i <lines.size(); i++){
+                String[] parts = lines.get(i).split(",");
+                if(parts[0].equalsIgnoreCase(name)) {
+                    lines.remove(i);
+                    found = true;
+                    break;
+                }
+            }
+            if(found) {
+                Files.write(contactsFile, lines, StandardCharsets.UTF_8);
+                System.out.println("Contact deleted:" + name);
+            } else {
+                System.out.println("No contact found with name " + name);
+            } catch(IOException e) {
+                System.out.println("Error reading or writing to contacts file: " + e.getMessage());
+            }
+        }
+    }
+}
