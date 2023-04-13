@@ -52,11 +52,11 @@ private static void showContacts() {
         if (lines.isEmpty()) {
             System.out.println("No contacts found");
         } else {
-            System.out.println("Name  |  Phone number");
-            System.out.println("---------------------");
+            System.out.printf("%-16s | %-16s%n", "Name","Phone number");
+            System.out.println("--------------------------------");
             for (String line : lines) {
                 String [] parts = line.split(",");
-                System.out.println(parts[0] + "  |  " + parts[1]);
+                System.out.printf("%-16s | %-16s%n", parts[0],parts[1]);
             }
         }
     } catch (IOException e) {
